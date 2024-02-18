@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate QR Code from Serial Number</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+</head>
+
+<body>
+    <h2>Generate QR Code from Serial Number</h2>
+    <div>
+        <label for="serial">Enter Serial Number:</label>
+        <input type="text" id="serial" placeholder="Serial Number">
+        <button onclick="generateHashAndQR()">Generate QR Code</button>
+    </div>
+    <div id="qrcode"></div>
+
+    <script>
+        function generateHashAndQR() {
+            var serialNumber = document.getElementById('serial').value;
+
+            // Generate hash code using SHA-256
+            var hashCode = sha256(serialNumber);
+
+            // Repeat the hash code until it reaches the desired length
+            while (hashCode.length < 256) {
+                hashCode += hashCode; // Concatenate the hash code with itself
+            }
+
+            // Trim the hash code to the desired length
+            hashCode = hashCode.substr(0, 256);
+            console.log(hashCode);
+            console.log(hashCode.length);
+
+            storeToDb(hashCode)
+            // Generate QR code
+            var qrCode = new QRCode(document.getElementById("qrcode"), {
+                text: "http://localhost:3000/" + hashCode,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+        async function storeToDb(hashCode) {
+            let headersList = {
+                "Content-Type": "application/json"
+            }
+
+            let bodyContent = JSON.stringify({ hashCode });
+
+            let response = await fetch("http://localhost:3000/store-hash", {
+                method: "POST",
+                body: bodyContent,
+                headers: headersList
+            });
+
+            let data = await response.text();
+            console.log(data);
+
+        }
+
+    </script>
+</body>
+
+</html>
