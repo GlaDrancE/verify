@@ -46,7 +46,7 @@ app.post('/store-hash', async (req, res) => {
         res.status(500).send('Internal server error');
     }
 });
-app.get("/users/:id", function (req, res) {
+app.get("/:id", function (req, res) {
     const id = req.params.id;
     // console.log(id);
     Data.findOne({ hashCode: id })
