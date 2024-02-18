@@ -38,7 +38,7 @@
             storeToDb(hashCode)
             // Generate QR code
             var qrCode = new QRCode(document.getElementById("qrcode"), {
-                text: "http://localhost:3000/" + hashCode,
+                text: "https://product-verifaction.onrender.com/" + hashCode,
                 width: 200,
                 height: 200,
                 colorDark: "#000000",
